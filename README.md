@@ -9,7 +9,6 @@ The space of possible structures that a given RNA sequence can form is large ($2
 
 While computational algorithms for counting or finding the optimal structure are NP-hard(for certain definitions...), biological systems evolved to solve the problem much faster - for a subset of sequences. Algorithms on a secondary structure level can find optimal structures within $O(n^3)$, which is most likely (?) still significantly slower than what biological systems implement through evolution. Can we find algorithms with lower complexity that still solve the folding problem - possibly for subsets of RNA sequences?
 
-Given an RNA length, there are many more possible sequences ($4^n$) than structures ($2.7^n$). [tbc: neutral networks and how to analyse them]
 
 
 ## Code and script
