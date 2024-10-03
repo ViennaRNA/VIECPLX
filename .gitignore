@@ -302,3 +302,4 @@ TSWLatexianTemp*
 .DS_Store
 __pycache__/
 .vscode/settings.json
+doc/.ipynb_checkpoints
