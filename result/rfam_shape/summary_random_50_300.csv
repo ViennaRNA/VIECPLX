@@ -1,0 +1,7 @@
+algorithm	sum correct shape	sum correct structure	% correct shape	% correct structure
+Basic cofold	52	19	1.3499480789200415	0.4932502596053998
+Beam search	1523	1296	39.53790238836968	33.64485981308411
+Best helix cofold with RNAfold in second step	901	798	23.390446521287643	20.71651090342679
+Folding rule	609	486	15.809968847352025	12.616822429906541
+Look behind fold	5	0	0.12980269989615784	0.0
+RNAfold	3852	3852	100.0	100.0
