@@ -8,7 +8,7 @@ import pandas as pd
 import seaborn as sns
 import RNA
 
-from .neutral import ShapeFreq, StrDensity, PathUpper
+from .neutral import ShapeFreq, StrDensity, PathUpper, PathToRNAfold
 from .continuity import ContinuousEvol
 from .helper import mutateSeq
 
@@ -38,21 +38,32 @@ class Analysis:
         return shapes
 
 
-    def run_path_upper(self, length, nb_target, nb_trial):
+    def run_path_upper(self, length, nb_target, nb_trial, nb_rounds=100, log_path=None, loose=False):
         """Run neutral path upper bound analysis
 
         Args:
             length: length of RNA
             nb_target: number of target sequenes
-            nb_trial: nuber of trial sequences for each target sequence
+            nb_trial: number of trial sequences for each target sequence
+            nb_rounds: number of trials to launch, return the smallest upper bound
+            log_path: path to store target and trial sequences if given
         """
         upper = PathUpperAnalysis(*self.foldings.values())
-        for _ in range(nb_target):
+        for i in range(nb_target):
             target_seq = RNA.random_string(length, 'ACGU')
-            for _ in range(nb_trial):
+            for j in range(nb_trial):
+                print(f'Target: {i} Trial: {j}', end='\r')
                 trial_seq = RNA.random_string(length, 'ACGU')
-                upper(target_seq, trial_seq)
+                if log_path is not None:
+                    with open(log_path, "a") as f:
+                        print(target_seq, trial_seq, sep="\t", file=f)
+                upper(target_seq, trial_seq, nb_rounds, loose=loose)
         return upper
+
+    def fold(self, seq):
+        """Simple fold the given sequence with all flding algorithms
+        """
+        return {k: v.fold(seq) for k, v in self.foldings.items()}
 
 
 class ShapeFreqAnalysis:
@@ -144,12 +155,16 @@ class StrDensityAnalysis:
 
 
 
-    def plot_2d(self):
+    def plot_2d(self, label='bp'):
         """Put SDS of all folding algorithms in one 2D plot
         """
+        if label == 'bp':
+            count = 'bpcount'
+        else:
+            count = 'treecount'
         allDf = self.to_df()
         strlim = max(allDf['str'])
-        g = sns.jointplot(data=allDf, x='str', y='seq', hue='label', kind='kde', xlim=(-1,strlim//10*10+1), ylim=(-1, 101), joint_kws={'weights': 'count', 'data': allDf})
+        g = sns.jointplot(data=allDf, x='str', y='seq', hue='label', kind='kde', xlim=(-1,strlim//10*10+1), ylim=(-1, 101), joint_kws={'weights': count, 'data': allDf})
         g.set_axis_labels('Structure distance', 'Sequence distance')
         g.ax_marg_x.remove()
         g.ax_marg_y.remove()
@@ -164,11 +179,11 @@ class PathUpperAnalysis:
         self.trial_seq = []
 
 
-    def __call__(self, target_seq, trial_seq):
+    def __call__(self, target_seq, trial_seq, nb_rounds=100, loose=False):
         self.target_seq.append(target_seq)
         self.trial_seq.append(trial_seq)
         for x in self.records.values():
-            x(target_seq, trial_seq)
+            x(target_seq, trial_seq, rounds=nb_rounds, loose=loose)
 
 
     def to_df(self):

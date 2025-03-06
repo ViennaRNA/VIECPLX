@@ -32,3 +32,9 @@ def cc_from_dbn(dbn):
         else:
             cc.append([ind])
     return cc
+
+
+def hamming_dist(inst1, inst2):
+    """Hamming distance between given two instances
+    """
+    return sum(x!=y for x, y in zip(inst1, inst2))

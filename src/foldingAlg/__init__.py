@@ -1,3 +1,4 @@
+import seaborn as sns
 
 from . import basic
 from . import basic_co_folding
@@ -19,7 +20,7 @@ class BeamSearch(Folding):
         self.bp_threshold=bp_threshold
         self.l = l
         self.bps = bps
- 
+
     def fold(self, w):
         return self.beam.fold(w, bp_threshold=self.bp_threshold, l=self.l, bps=self.bps, debug=False)
 
@@ -45,4 +46,20 @@ BeamSearchLegacy     = BeamSearch('Beam search legacy')
 
 Default_list = [ViennaFold, BasicCoFold, BestHelixCoFold, FoldingRule, LookBehindFold, BasicCoFoldRNAFold, BestHelixFoldRNAFold, BeamSearchDefault]
 No_beam_list = [ViennaFold, BasicCoFold, BestHelixCoFold, FoldingRule, LookBehindFold, BasicCoFoldRNAFold, BestHelixFoldRNAFold]
-Final_list = [ViennaFold, LookBehindFold, BasicCoFold, BestHelixFoldRNAFold, FoldingRule, BeamSearchDefault]
+
+def load_Final(exclus=[]):
+    lst = [ViennaFold, BeamSearchDefault, FoldingRule, BestHelixFoldRNAFold, BasicCoFold, LookBehindFold]
+    Final_list = [x for x in lst if not x in exclus]
+    Final_toplot = [x.name for x in Final_list]
+    Final_labels = []
+    for x in Final_list:
+        if x == BasicCoFold:
+            Final_labels.append('Basic co-fold')
+        elif x == BestHelixFoldRNAFold:
+            Final_labels.append('Best helix co-fold')
+        else:
+            Final_labels.append(x.name)
+    c = sns.color_palette()
+    Final_palette = {lst[i].name: c[i] for i in range(len(lst))}
+    return Final_list, Final_toplot, Final_labels, Final_palette
+
